@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, _request_ctx_stack
 from flask_cors import cross_origin, CORS
 from jose import jwt
 from .auth import *
-from .routes import users
+from .routes import users, food
 import os
 
 from .auth import *
@@ -24,6 +24,7 @@ Migrate(app, db)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(users.bp)
+app.register_blueprint(food.bp)
 
 @app.route('/')
 def test():
