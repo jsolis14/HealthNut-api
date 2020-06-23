@@ -40,6 +40,7 @@ class User(db.Model):
             'cal_limit' : self.cal_limit,
         }
 
+
 class User_Weight(db.Model):
     __tablename__ = 'user_weight'
     id = db.Column(db.Integer, primary_key=True)
