@@ -139,16 +139,27 @@ class Daily_Food(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     day = db.Column(db.Date, nullable=False)
-    food_id = db.Column(db.Integer, db.ForeignKey("foods.id"))
-    meal_id = db.Column(db.Integer, db.ForeignKey("meal.id"))
-    type = db.Column(db.String, nullable=False)
+
+    breakfast_foods = db.Column(db.ARRAY(db.Integer))
+    breakfast_meals = db.Column(db.ARRAY(db.Integer))
+    lunch_foods = db.Column(db.ARRAY(db.Integer))
+    lunch_meals =db.Column(db.ARRAY(db.Integer))
+    dinner_foods = db.Column(db.ARRAY(db.Integer))
+    dinner_meals = db.Column(db.ARRAY(db.Integer))
+    snack_foods = db.Column(db.ARRAY(db.Integer))
+    snack_meals = db.Column(db.ARRAY(db.Integer))
 
     def toDict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
             'date': self.date,
-            'food_id': self.food_id,
-            'meal_id': self.meal_id,
-            'type': self.type,
+            'breakfast_foods' : self.breakfast_foods,
+            'breakfast_meals' : self.breakfast_meals,
+            'lunch_foods' : self.lunch_foods,
+            'lunch_meals' : self.lunch_meals,
+            'dinner_foods' : self.dinner_foods,
+            'dinner_meals' : self.dinner_meals,
+            'snack_foods' : self.snack_foods,
+            'snack_meals' : self.snack_meals,
         }
