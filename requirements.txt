@@ -1,0 +1,11 @@
+flask
+python-dotenv
+requests
+authlib
+six
+python-jose
+flask-cors
+psycopg2-binary
+flask-sqlalchemy
+alembic
+flask-migrate
