@@ -30,7 +30,7 @@ def patch_post_user():
                         name=body["name"])
         db.session.add(new_user)
         db.session.commit()
-        return jsonify(new_user.toDict(), 201)
+        return jsonify(new_user.toDict())
 
 @bp.route('/updateinfo', methods=['POST'])
 @cross_origin(headers=["Content-Type", "Authorization"])
