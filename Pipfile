@@ -17,6 +17,7 @@ psycopg2-binary = "*"
 flask-sqlalchemy = "*"
 alembic = "*"
 flask-migrate = "*"
+flask-expects-json = "*"
 
 [requires]
 python_version = "3.8"
