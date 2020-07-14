@@ -19,7 +19,7 @@ class User(db.Model):
 
     # relationships
     foods = db.relationship("Food", backref="user")
-    meals = db.relationship("Meal", backref="user")
+    meals = db.relationship("Meal", backref="user", lazy="joined")
     daily_foods = db.relationship("Daily_Food", backref="user")
     user_weights = db.relationship("User_Weight", backref="user")
     daily_caloric_intakes = db.relationship("Daily_Caloric_Intake", backref="user")
