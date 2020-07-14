@@ -83,10 +83,10 @@ class Daily_Caloric_Intake(db.Model):
             'total_protein' : self.total_protein,
         }
 
-meals = db.Table('meals',
-    db.Column('meal_id', db.Integer, db.ForeignKey('meal.id'), primary_key=True),
-    db.Column('food_id', db.Integer, db.ForeignKey('foods.id'), primary_key=True)
-)
+# meals = db.Table('meals',
+#     db.Column('meal_id', db.Integer, db.ForeignKey('meal.id'), primary_key=True),
+#     db.Column('food_id', db.Integer, db.ForeignKey('foods.id'), primary_key=True)
+# )
 class Food(db.Model):
     __tablename__ = 'foods'
     id = db.Column(db.Integer, primary_key=True)
@@ -125,13 +125,14 @@ class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String, nullable=False)
-    foods = db.relationship('Food', secondary=meals, lazy='subquery', backref=db.backref('meals', lazy=True))
+    food_ids = db.Column(db.ARRAY(db.Integer))
 
     def toDict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'name': self.name
+            'name': self.name,
+            'food_ids': self.food_ids,
         }
 
 class Daily_Food(db.Model):
