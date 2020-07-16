@@ -154,7 +154,7 @@ class Daily_Food(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'date': self.date,
+            'day': self.day,
             'breakfast_foods' : self.breakfast_foods,
             'breakfast_meals' : self.breakfast_meals,
             'lunch_foods' : self.lunch_foods,

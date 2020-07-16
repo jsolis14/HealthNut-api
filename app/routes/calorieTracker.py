@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 from ..auth import *
-from ..models import User, db, Food, Daily_Food
+from ..models import User, db, Food, Daily_Food, Meal
 import datetime
 bp = Blueprint("calorieTracker", __name__, url_prefix="/calorie-tracker")
 
@@ -15,18 +15,8 @@ def handle_auth_error(ex):
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def postCalorieTrackerFoods():
-    # date
-    # breakfast_foods
-    # breakfast_meals
-    # lunch_foods
-    # lunch_meals
-    # dinner_foods
-    # dinner_meals
-    # snack_foods
-    # snack_meals
-    # user_id
     body = request.json
-    print(body)
+
     food_ids = body['food_ids']
     to = body['from']
 
@@ -65,28 +55,6 @@ def postCalorieTrackerFoods():
         daily_food.snack_foods = food_ids
         db.session.add(daily_food)
         db.session.commit()
-    # breakfast_foods_list = []
-    # if(len(breakfast_foods) > 0):
-    #     breakfastSet = set(breakfast_foods)
-    #     count = {}
-    #     for food in breakfastSet:
-    #         count[food] = breakfast_foods.count(food)
-    #     for foodId, servings in count.items():
-    #         food = Food.query.get(foodId)
-    #         breakfast_foods_list.append({'food': food.toDict(), 'servings': servings})
-    #     # change for later
-    #     daily_food.breakfast_foods = body['breakfast_foods']
-    #     db.session.add(daily_food)
-    #     db.session.commit()
-    #     print(count)
-    #     print(breakfast_foods_list)
-    # if(len(breakfast_foods) > 0):
-    #     pass
-    # if(len(breakfast_foods) > 0):
-    #     pass
-    # if(len(breakfast_foods) > 0):
-    #     pass
-    # print(body)
 
     return {'foods': food_list, 'food_ids':food_ids}
 
@@ -167,3 +135,111 @@ def getCalorieTrackerFoods(id):
     'lunch_foods': lunch_foods_list, 'lunch_foods_ids': lunch_foods,
     'dinner_foods': dinner_foods_list, 'dinner_foods_ids': dinner_foods,
     'snack_foods': snack_foods_list, 'snack_foods_ids': snack_foods}
+
+@bp.route('meal', methods=['POST'])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def postCalorieTrackerMeal():
+    body = request.json
+
+    to = body['from']
+    error = ''
+
+    if body['meal_id'] == '':
+        return jsonify(['Please select a Meal before sumbitting'],400)
+    # check if date exist for user
+    date = datetime.datetime(body['day'][0],body['day'][1],body['day'][2])
+    daily_food = Daily_Food.query.filter_by(user_id=body['user_id'], day=date).first()
+
+    print(daily_food)
+    meal = Meal.query.get(body['meal_id'])
+    meal = meal.toDict()
+
+    if(not daily_food):
+        daily_food = Daily_Food(user_id=body['user_id'], day=date)
+        db.session.add(daily_food)
+        db.session.commit()
+
+    daily_food_dict = daily_food.toDict()
+    print(daily_food_dict)
+    if to == 'breakfast':
+        # daily_food.breakfast_meals = daily_food.breakfast_meals.append(meal['food_ids'])
+        # db.session.add(daily_food)
+        # db.session.commit()
+        breakfast_meals = []
+        if daily_food.breakfast_meals:
+            print(daily_food.breakfast_meals)
+            breakfast_meals = daily_food_dict['breakfast_meals'].copy()
+        if meal['id'] in breakfast_meals:
+            return jsonify(f"{meal['name']} is arleady in breakfast meals", 400)
+        breakfast_meals.append(body['meal_id'])
+        daily_food.breakfast_meals = breakfast_meals
+        print(breakfast_meals)
+        db.session.add(daily_food)
+        db.session.commit()
+    elif to == 'lunch':
+        lunch_meals = []
+        if daily_food.lunch_meals:
+            print(daily_food.lunch_meals)
+            lunch_meals = daily_food_dict['lunch_meals'].copy()
+        if meal['id'] in lunch_meals:
+            return jsonify(f"{meal['name']} is arleady in lunch meals", 400)
+        lunch_meals.append(body['meal_id'])
+        daily_food.lunch_meals = lunch_meals
+        print(lunch_meals)
+        db.session.add(daily_food)
+        db.session.commit()
+    elif to == 'dinner':
+        dinner_meals = []
+        if daily_food.dinner_meals:
+            print(daily_food.dinner_meals)
+            dinner_meals = daily_food_dict['dinner_meals'].copy()
+        if meal['id'] in dinner_meals:
+            return jsonify(f"{meal['name']} is arleady in dinner meals", 400)
+        dinner_meals.append(body['meal_id'])
+        daily_food.dinner_meals = dinner_meals
+        print(dinner_meals)
+        db.session.add(daily_food)
+        db.session.commit()
+    elif to == 'snack':
+        snack_meals = []
+        if daily_food.snack_meals:
+            print(daily_food.snack_meals)
+            snack_meals = daily_food_dict['snack_meals'].copy()
+        if meal['id'] in snack_meals:
+            return jsonify(f"{meal['name']} is arleady in snack meals", 400)
+        snack_meals.append(body['meal_id'])
+        daily_food.snack_meals = snack_meals
+        print(snack_meals)
+        db.session.add(daily_food)
+        db.session.commit()
+
+
+
+    food_ids = meal['food_ids']
+    food_ids_set = set(food_ids)
+
+    count={}
+    meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0, 'food_ids':meal['food_ids']}
+    for food in food_ids_set:
+        count[food] = food_ids.count(food)
+    for foodId, servings in count.items():
+        final_food = Food.query.get(foodId)
+        final_food = final_food.toDict()
+        meal_item['total_cal']+=final_food['total_cal']*servings
+        meal_item['total_carbs']+=final_food['total_carbs']*servings
+        meal_item['total_fat']+=final_food['total_fat']*servings
+        meal_item['total_protein']+=final_food['protein']*servings
+        meal_item['foods'].append({**final_food, 'servings': servings})
+
+    if error == '':
+        return jsonify(meal_item ,200)
+    else:
+        return jsonify(error, 400)
+
+
+@bp.route('user/<int:id>/meals', methods=['PATCH'])
+@cross_origin(headers=["Content-Type", "Authorization"])
+@requires_auth
+def getCalorieTrackerMeals(id):
+    return ''

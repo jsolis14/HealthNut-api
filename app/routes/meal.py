@@ -49,7 +49,7 @@ def getMeals(id):
 
     meal_list = []
     for meal in meals:
-        meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0}
+        meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0, 'food_ids':meal['food_ids']}
         food_ids = meal['food_ids']
         food_ids_set = set(food_ids)
         count = {}
