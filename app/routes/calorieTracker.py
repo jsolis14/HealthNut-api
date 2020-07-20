@@ -242,4 +242,97 @@ def postCalorieTrackerMeal():
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def getCalorieTrackerMeals(id):
-    return ''
+    ##date
+    body = request.json
+    date = datetime.datetime(body['day'][0],body['day'][1],body['day'][2])
+    daily_food = Daily_Food.query.filter_by(user_id=id, day=date).first()
+
+    meal_res = {'breakfast_meals':[], 'lunch_meals':[], 'dinner_meals':[], 'snack_meals':[]}
+    if(not daily_food):
+        return jsonify(meal_res, 200)
+
+    if daily_food.breakfast_meals:
+        for meal_id in daily_food.breakfast_meals:
+            meal = Meal.query.get(meal_id)
+            food_ids = meal.food_ids
+            meal = meal.toDict()
+
+            food_ids_set = set(food_ids)
+            count = {}
+            meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0, 'food_ids':meal['food_ids']}
+            for food in food_ids_set:
+                count[food] = food_ids.count(food)
+            for foodId, servings in count.items():
+                final_food = Food.query.get(foodId)
+                final_food = final_food.toDict()
+                meal_item['total_cal']+=final_food['total_cal']*servings
+                meal_item['total_carbs']+=final_food['total_carbs']*servings
+                meal_item['total_fat']+=final_food['total_fat']*servings
+                meal_item['total_protein']+=final_food['protein']*servings
+                meal_item['foods'].append({**final_food, 'servings': servings})
+            meal_res['breakfast_meals'].append(meal_item)
+
+    if daily_food.lunch_meals:
+        for meal_id in daily_food.lunch_meals:
+            meal = Meal.query.get(meal_id)
+            food_ids = meal.food_ids
+            meal = meal.toDict()
+
+            food_ids_set = set(food_ids)
+            count = {}
+            meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0, 'food_ids':meal['food_ids']}
+            for food in food_ids_set:
+                count[food] = food_ids.count(food)
+            for foodId, servings in count.items():
+                final_food = Food.query.get(foodId)
+                final_food = final_food.toDict()
+                meal_item['total_cal']+=final_food['total_cal']*servings
+                meal_item['total_carbs']+=final_food['total_carbs']*servings
+                meal_item['total_fat']+=final_food['total_fat']*servings
+                meal_item['total_protein']+=final_food['protein']*servings
+                meal_item['foods'].append({**final_food, 'servings': servings})
+            meal_res['lunch_meals'].append(meal_item)
+
+    if daily_food.dinner_meals:
+        for meal_id in daily_food.dinner_meals:
+            meal = Meal.query.get(meal_id)
+            food_ids = meal.food_ids
+            meal = meal.toDict()
+
+            food_ids_set = set(food_ids)
+            count = {}
+            meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0, 'food_ids':meal['food_ids']}
+            for food in food_ids_set:
+                count[food] = food_ids.count(food)
+            for foodId, servings in count.items():
+                final_food = Food.query.get(foodId)
+                final_food = final_food.toDict()
+                meal_item['total_cal']+=final_food['total_cal']*servings
+                meal_item['total_carbs']+=final_food['total_carbs']*servings
+                meal_item['total_fat']+=final_food['total_fat']*servings
+                meal_item['total_protein']+=final_food['protein']*servings
+                meal_item['foods'].append({**final_food, 'servings': servings})
+            meal_res['dinner_meals'].append(meal_item)
+
+    if daily_food.snack_meals:
+        for meal_id in daily_food.snack_meals:
+            meal = Meal.query.get(meal_id)
+            food_ids = meal.food_ids
+            meal = meal.toDict()
+
+            food_ids_set = set(food_ids)
+            count = {}
+            meal_item = {'id': meal['id'] , 'name':meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0, 'food_ids':meal['food_ids']}
+            for food in food_ids_set:
+                count[food] = food_ids.count(food)
+            for foodId, servings in count.items():
+                final_food = Food.query.get(foodId)
+                final_food = final_food.toDict()
+                meal_item['total_cal']+=final_food['total_cal']*servings
+                meal_item['total_carbs']+=final_food['total_carbs']*servings
+                meal_item['total_fat']+=final_food['total_fat']*servings
+                meal_item['total_protein']+=final_food['protein']*servings
+                meal_item['foods'].append({**final_food, 'servings': servings})
+            meal_res['snack_meals'].append(meal_item)
+
+    return jsonify(meal_res, 200)

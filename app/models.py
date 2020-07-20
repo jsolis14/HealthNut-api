@@ -53,7 +53,7 @@ class User_Weight(db.Model):
             'id' : self.id,
             'user_id' : self.user_id,
             'weight' : self.weight,
-            'date' : self.date,
+            'day' : self.day,
         }
 
 class Daily_Caloric_Intake(db.Model):
