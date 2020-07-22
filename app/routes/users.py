@@ -55,7 +55,7 @@ def updateInfo():
 @requires_auth
 def getUserFood(id):
     # flightPlan = FlightPlan.query.options(joinedload(FlightPlan.user)).get(id)
-    user = User.query.options(joinedload(User.foods)).get(id)
+    # user = User.query.options(joinedload(User.foods)).get(id)
     user = User.query.get(id)
     foods = user.foods
     # foods = Food.query.filter_by(user_id=id).all()

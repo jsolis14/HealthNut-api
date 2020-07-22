@@ -19,7 +19,7 @@ class User(db.Model):
 
     # relationships
     foods = db.relationship("Food", backref="user")
-    meals = db.relationship("Meal", backref="user")
+    meals = db.relationship("Meal", backref="user", lazy="joined")
     daily_foods = db.relationship("Daily_Food", backref="user")
     user_weights = db.relationship("User_Weight", backref="user")
     daily_caloric_intakes = db.relationship("Daily_Caloric_Intake", backref="user")
@@ -53,7 +53,7 @@ class User_Weight(db.Model):
             'id' : self.id,
             'user_id' : self.user_id,
             'weight' : self.weight,
-            'date' : self.date,
+            'day' : self.day,
         }
 
 class Daily_Caloric_Intake(db.Model):
@@ -83,10 +83,10 @@ class Daily_Caloric_Intake(db.Model):
             'total_protein' : self.total_protein,
         }
 
-meals = db.Table('meals',
-    db.Column('meal_id', db.Integer, db.ForeignKey('meal.id'), primary_key=True),
-    db.Column('food_id', db.Integer, db.ForeignKey('foods.id'), primary_key=True)
-)
+# meals = db.Table('meals',
+#     db.Column('meal_id', db.Integer, db.ForeignKey('meal.id'), primary_key=True),
+#     db.Column('food_id', db.Integer, db.ForeignKey('foods.id'), primary_key=True)
+# )
 class Food(db.Model):
     __tablename__ = 'foods'
     id = db.Column(db.Integer, primary_key=True)
@@ -125,13 +125,14 @@ class Meal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String, nullable=False)
-    foods = db.relationship('Food', secondary=meals, lazy='subquery', backref=db.backref('meals', lazy=True))
+    food_ids = db.Column(db.ARRAY(db.Integer))
 
     def toDict(self):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'name': self.name
+            'name': self.name,
+            'food_ids': self.food_ids,
         }
 
 class Daily_Food(db.Model):
@@ -153,7 +154,7 @@ class Daily_Food(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
-            'date': self.date,
+            'day': self.day,
             'breakfast_foods' : self.breakfast_foods,
             'breakfast_meals' : self.breakfast_meals,
             'lunch_foods' : self.lunch_foods,
