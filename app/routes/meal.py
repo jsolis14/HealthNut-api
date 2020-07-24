@@ -29,7 +29,7 @@ def postMeal():
         db.session.commit()
         meal = meal.toDict()
         print(meal)
-        meal_item = {'id': meal['id'], 'name': meal['name'], 'foods':[]}
+        meal_item = {'id': meal['id'], 'name': meal['name'], 'foods':[], 'total_cal':0, 'total_carbs':0, 'total_fat':0, 'total_protein':0}
         food_ids = meal['food_ids']
         food_ids_set = set(food_ids)
         count = {}
@@ -37,8 +37,12 @@ def postMeal():
             count[food] = food_ids.count(food)
         for foodId, servings in count.items():
             final_food = Food.query.get(foodId)
-            meal_item['foods'].append({**final_food.toDict(), 'servings': servings})
-
+            final_food = final_food.toDict()
+            meal_item['foods'].append({**final_food, 'servings': servings})
+            meal_item['total_cal']+=final_food['total_cal']*servings
+            meal_item['total_carbs']+=final_food['total_carbs']*servings
+            meal_item['total_fat']+=final_food['total_fat']*servings
+            meal_item['total_protein']+=final_food['protein']*servings
         return jsonify(meal_item, 200)
 
 ## meal_list =  [{id: 1, name: Carb up, foods:[{name:bok choy, servings}]}]

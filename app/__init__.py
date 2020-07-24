@@ -8,16 +8,16 @@ from jose import jwt
 from .auth import *
 from .routes import users, food, calorieTracker, meal, weightTracker
 import os
-
+from flask_json_schema import JsonSchema, JsonValidationError
 from .auth import *
 
 app = Flask(__name__)
+schema = JsonSchema(app)
 app.config.from_mapping({
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     'FLASK_ENV': os.environ.get('FLASK_ENV'),
     'SQLALCHEMY_DATABASE_URI': os.environ.get('DATABASE_URL'),
 })
-
 db.init_app(app)
 Migrate(app, db)
 
@@ -28,6 +28,10 @@ app.register_blueprint(food.bp)
 app.register_blueprint(calorieTracker.bp)
 app.register_blueprint(meal.bp)
 app.register_blueprint(weightTracker.bp)
+
+@app.errorhandler(JsonValidationError)
+def validation_error(e):
+    return jsonify({ 'error': e.message, 'errors': [validation_error.message for validation_error  in e.errors]})
 
 @app.errorhandler(AuthError)
 def handle_auth_error(ex):

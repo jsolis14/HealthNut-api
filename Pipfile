@@ -18,6 +18,7 @@ flask-sqlalchemy = "*"
 alembic = "*"
 flask-migrate = "*"
 flask-expects-json = "*"
+flask-json-schema = "*"
 
 [requires]
 python_version = "3.8"
