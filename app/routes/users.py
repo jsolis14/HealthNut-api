@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 from flask_cors import cross_origin
 from ..auth import *
 from sqlalchemy.orm import joinedload
-from ..models import User, Food ,db
+from ..models import User, Food, db
 bp = Blueprint("users", __name__, url_prefix="/users")
 
 
@@ -11,6 +11,7 @@ def handle_auth_error(ex):
     response = jsonify(ex.error)
     response.status_code = ex.status_code
     return response
+
 
 @bp.route("", methods=["PATCH"])
 @cross_origin(headers=["Content-Type", "Authorization"])
@@ -32,12 +33,12 @@ def patch_post_user():
         db.session.commit()
         return jsonify(new_user.toDict())
 
+
 @bp.route('/updateinfo', methods=['POST'])
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def updateInfo():
     body = request.json
-    print(body)
     user = User.query.get(body['id'])
     user.body_weight = body['weight']
     user.gender = body['gender']
@@ -50,14 +51,13 @@ def updateInfo():
     db.session.commit()
     return jsonify('', 200)
 
+
+# gets all the foods for a user
 @bp.route('/<int:id>/food')
 @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth
 def getUserFood(id):
-    # flightPlan = FlightPlan.query.options(joinedload(FlightPlan.user)).get(id)
-    # user = User.query.options(joinedload(User.foods)).get(id)
     user = User.query.get(id)
     foods = user.foods
-    # foods = Food.query.filter_by(user_id=id).all()
     foodList = [food.toDict() for food in foods]
     return jsonify(foodList)
